@@ -8,6 +8,7 @@ import { ResponseFormatter, StreamFormatter } from './formatter';
 import {multerInstance} from './multer';
 import fs from 'fs';
 import {IncomingMessage} from 'http';
+import { finalizeContext } from './context';
 
 const parseBoolean = LangUtils.parseBoolean;
 const DefaultTopOption = 25;
@@ -130,7 +131,8 @@ function finalizeContext(req, next) {
  */
 function tryFormat(data, req, res) {
     // finalize context
-    return finalizeContext(req, () => {
+    const finalizeContextHandler = finalizeContext();
+    return finalizeContextHandler(req, res, () => {
         // get response formatter
         const responseFormatter = req.context.getApplication().getStrategy(ResponseFormatter);
         //if service exists
@@ -154,7 +156,8 @@ function tryFormat(data, req, res) {
  * @param {NextFunction} next
  */
 function tryFormatStream(data, req, res, next) {
-    return finalizeContext(req, () => {
+    const finalizeContextHandler = finalizeContext();
+    return finalizeContextHandler(req, res, () => {
         return new StreamFormatter(data).execute(req, res, next);
     });
 }

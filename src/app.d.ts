@@ -152,6 +152,19 @@ declare global {
     }
 }
 
+declare global {
+    namespace http {
+        interface IncomingMessage {
+            parentReq?: IncomingMessage;
+        }
+    }
+    namespace Express {
+        interface Request {
+            parentReq?: Request;
+        }
+    }
+}
+
 declare module '@themost/common' {
     interface DataAdapterBase {
         dispose(): void;

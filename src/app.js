@@ -199,7 +199,7 @@ class ExpressDataApplication extends IApplication {
 
     /**
      * @param {Express=} app
-     * @returns {*}
+     * @returns {import('express').RequestHandler}
      */
     middleware(app) {
       const thisApp = this;
@@ -236,6 +236,30 @@ class ExpressDataApplication extends IApplication {
       return function dataContextMiddleware(req, res, next) {
           if (req.context && req.parentReq instanceof IncomingMessage) {
               return next();
+          if (req.parentReq instanceof IncomingMessage) {
+              if (Object.prototype.hasOwnProperty.call(req.parentReq, 'context')) {
+                    // init context property (leave it configurable to allow context replacement in sub requests)
+                    Object.defineProperty(req, 'context', {
+                        get: function() {
+                            return this.parentReq.context;
+                        },
+                        configurable: true
+                    });
+                    // init user property and leave it configurable to allow user replacement in sub requests
+                    Object.defineProperty(req, 'user', {
+                        get: function() {
+                            return this.parentReq.user;
+                        },
+                        set: function(value) {
+                            this.parentReq.user = value;
+                            if (typeof this.parentReq.context.refreshState === 'function') {
+                                this.parentReq.context.refreshState();
+                            }
+                        },
+                        configurable: true
+                    });
+                    return next();
+                }
           }
           const context = new ExpressDataContext(thisApp.getConfiguration());
           // define application property
@@ -263,9 +287,10 @@ class ExpressDataApplication extends IApplication {
            * @memberOf req
            */
           Object.defineProperty(req, 'context', {
-            get: function() {
-              return context;
-            }
+              get: function () {
+                  return context;
+              },
+              configurable: true
           });
           /**
            * Finalizes the current context by disposing the underlying data adapter if exists and then calling the finalize method of the context
