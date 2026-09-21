@@ -107,16 +107,6 @@ const DefaultTopOption = 25;
  * @returns string
  */
 
-function finalizeContext(req, next) {
-    if (req && req.parentReq instanceof IncomingMessage) {
-        return next();
-    }
-    if (req && req.context && typeof req.context.finalize === 'function') {
-        return req.context.finalize(next);
-    }
-    return next();
-}
-
 /**
  * Gets or sets the name of the route parameter that holds the name of an entity function
  * @property

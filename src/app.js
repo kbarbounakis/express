@@ -236,6 +236,7 @@ class ExpressDataApplication extends IApplication {
       return function dataContextMiddleware(req, res, next) {
           if (req.context && req.parentReq instanceof IncomingMessage) {
               return next();
+          }
           if (req.parentReq instanceof IncomingMessage) {
               if (Object.prototype.hasOwnProperty.call(req.parentReq, 'context')) {
                     // init context property (leave it configurable to allow context replacement in sub requests)
