@@ -7,7 +7,6 @@ import {LangUtils, HttpNotFoundError, HttpBadRequestError, HttpMethodNotAllowedE
 import { ResponseFormatter, StreamFormatter } from './formatter';
 import {multerInstance} from './multer';
 import fs from 'fs';
-import {IncomingMessage} from 'http';
 import { finalizeContext } from './context';
 
 const parseBoolean = LangUtils.parseBoolean;
